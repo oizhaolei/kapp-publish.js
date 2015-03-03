@@ -14,6 +14,7 @@ var monk = require('monk');
 var db = monk('localhost:27017/nodetest1');
 
 var routes = require('./app/server/router');
+var appRoutes = require('./app/server/app_router');
 var app = express();
 
 app.set('views', path.join(__dirname, 'app/server/views'));
@@ -41,6 +42,7 @@ app.use(function(req,res,next){
 
 
 app.use('/', routes);
+app.use('/apps/', appRoutes);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
