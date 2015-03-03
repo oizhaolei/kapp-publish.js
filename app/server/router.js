@@ -183,7 +183,7 @@ router.get('/reset', function(req, res) {
   });
 });
 /* GET Userlist page. */
-appRouter.get('/userlist', function(req, res) {
+router.get('/userlist', function(req, res) {
     var db = req.db;
     var collection = db.get('usercollection');
     collection.find({},{},function(e,docs){
@@ -194,12 +194,12 @@ appRouter.get('/userlist', function(req, res) {
 });
 
 /* GET New User page. */
-appRouter.get('/newuser', function(req, res) {
+router.get('/newuser', function(req, res) {
     res.render('newuser', { title: 'Add New User' });
 });
 
 /* POST to Add User Service */
-appRouter.post('/adduser', function(req, res) {
+router.post('/adduser', function(req, res) {
 
     // Set our internal DB variable
     var db = req.db;
