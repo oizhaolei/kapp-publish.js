@@ -3,6 +3,7 @@ var router = express.Router();
 
 var modelContryList = require('./modules/country-list');
 var modelAccountManager = require('./modules/account-manager');
+var modelAppManager = require('./modules/app-manager');
 var modelEmailDispatcher = require('./modules/email-dispatcher');
 
 
@@ -182,51 +183,57 @@ router.get('/reset', function(req, res) {
     res.redirect('/print');
   });
 });
-/* GET Userlist page. */
-router.get('/userlist', function(req, res) {
-    var db = req.db;
-    var collection = db.get('usercollection');
-    collection.find({},{},function(e,docs){
-        res.render('userlist', {
-            "userlist" : docs
-        });
+/* GET Applist page. */
+router.get('/apps', function(req, res) {
+  if (req.session.user == null){
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/');
+    return;
+  }
+
+  modelAppManager.getMyApps(function(apps){
+    res.render('applist', {
+      "applist" : apps
     });
+  });
 });
 
-/* GET New User page. */
-router.get('/newuser', function(req, res) {
-    res.render('newuser', { title: 'Add New User' });
+/* GET New App page. */
+router.get('/newapp', function(req, res) {
+  if (req.session.user == null){
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/');
+    return;
+  }
+  res.render('newapp', { title: 'Add New App' });
 });
 
-/* POST to Add User Service */
-router.post('/adduser', function(req, res) {
+/* POST to Add App Service */
+router.post('/addapp', function(req, res) {
+  if (req.session.user == null){
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/');
+    return;
+  }
 
-    // Set our internal DB variable
-    var db = req.db;
 
-    // Get our form values. These rely on the "name" attributes
-    var userName = req.body.username;
-    var userEmail = req.body.useremail;
+  // Get our form values. These rely on the "name" attributes
+  var appname = req.body.appname;
+  var packageName = req.body.packageName;
 
-    // Set our collection
-    var collection = db.get('usercollection');
 
-    // Submit to the DB
-    collection.insert({
-        "username" : userName,
-        "email" : userEmail
-    }, function (err, doc) {
-        if (err) {
-            // If it failed, return error
-            res.send("There was a problem adding the information to the database.");
-        }
-        else {
-            // If it worked, set the header so the address bar doesn't still say /adduser
-            res.location("userlist");
-            // And forward to success page
-            res.redirect("userlist");
-        }
-    });
+  // Submit to the DB
+  modelAppManager.addApp(appname, packageName, function (err, doc) {
+    if (err) {
+      // If it failed, return error
+      res.send("There was a problem adding the information to the database.");
+    } else {
+      // If it worked, set the header so the address bar doesn't still say /addapp
+      res.location("applist");
+      // And forward to success page
+      res.redirect("applist");
+    }
+  });
 });
 
 

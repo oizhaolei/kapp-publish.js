@@ -8,11 +8,6 @@ var session = require('express-session')
 var logger = require('morgan');
 var debug = require('debug')('my-application');
 
-// New Code
-var mongo = require('mongodb');
-var monk = require('monk');
-var db = monk('localhost:27017/nodetest1');
-
 var routes = require('./app/server/router');
 var app = express();
 
@@ -32,13 +27,6 @@ app.use(session({
   saveUninitialized: true,
   secret: 'super-duper-secret-secret'
 }));
-
-// Make our db accessible to our router
-app.use(function(req,res,next){
-    req.db = db;
-    next();
-});
-
 
 app.use('/', routes);
 
