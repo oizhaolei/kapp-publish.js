@@ -28,9 +28,8 @@ app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, 'app/public')));
 app.use(session({
-  genid: function(req) {
-  },
-    return genuuid() // use UUIDs for session IDs
+  resave: false,
+  saveUninitialized: true,
   secret: 'super-duper-secret-secret'
 }));
 

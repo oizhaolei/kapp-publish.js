@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-var CT = require('./modules/country-list');
-var AM = require('./modules/account-manager');
-var EM = require('./modules/email-dispatcher');
+var modelContryList = require('./modules/country-list');
+var modelAccountManager = require('./modules/account-manager');
+var modelEmailDispatcher = require('./modules/email-dispatcher');
 
 
 // main login page //
@@ -14,7 +14,7 @@ router.get('/', function(req, res){
     res.render('login', { title: 'Hello - Please Login To Your Account' });
   }	else{
     // attempt automatic login //
-    AM.autoLogin(req.cookies.user, req.cookies.pass, function(o){
+    modelAccountManager.autoLogin(req.cookies.user, req.cookies.pass, function(o){
       if (o != null){
 	req.session.user = o;
 	res.redirect('/home');
@@ -26,7 +26,7 @@ router.get('/', function(req, res){
 });
 
 router.post('/', function(req, res){
-  AM.manualLogin(req.param('user'), req.param('pass'), function(e, o){
+  modelAccountManager.manualLogin(req.param('user'), req.param('pass'), function(e, o){
     if (!o){
       res.send(e, 400);
     }	else{
@@ -49,7 +49,7 @@ router.get('/home', function(req, res) {
   }   else{
     res.render('home', {
       title : 'Control Panel',
-      countries : CT,
+      countries : modelContryList,
       udata : req.session.user
     });
   }
@@ -57,7 +57,7 @@ router.get('/home', function(req, res) {
 
 router.post('/home', function(req, res){
   if (req.param('user') != undefined) {
-    AM.updateAccount({
+    modelAccountManager.updateAccount({
       user 		: req.param('user'),
       name 		: req.param('name'),
       email 		: req.param('email'),
@@ -90,7 +90,7 @@ router.get('/signup', function(req, res) {
 });
 
 router.post('/signup', function(req, res){
-  AM.addNewAccount({
+  modelAccountManager.addNewAccount({
     name 	: req.param('name'),
     email 	: req.param('email'),
     user 	: req.param('user'),
@@ -109,10 +109,10 @@ router.post('/signup', function(req, res){
 
 router.post('/lost-password', function(req, res){
   // look up the user's account via their email //
-  AM.getAccountByEmail(req.param('email'), function(o){
+  modelAccountManager.getAccountByEmail(req.param('email'), function(o){
     if (o){
       res.send('ok', 200);
-      EM.dispatchResetPasswordLink(o, function(e, m){
+      modelEmailDispatcher.dispatchResetPasswordLink(o, function(e, m){
 	// this callback takes a moment to return //
 	// should add an ajax loader to give user feedback //
 	if (!e) {
@@ -131,7 +131,7 @@ router.post('/lost-password', function(req, res){
 router.get('/reset-password', function(req, res) {
   var email = req.query["e"];
   var passH = req.query["p"];
-  AM.validateResetLink(email, passH, function(e){
+  modelAccountManager.validateResetLink(email, passH, function(e){
     if (e != 'ok'){
       res.redirect('/');
     } else{
@@ -139,7 +139,7 @@ router.get('/reset-password', function(req, res) {
       req.session.reset = { email:email, passHash:passH };
       res.render('reset', { title : 'Reset Password' });
     }
-  })
+  });
 });
 
 router.post('/reset-password', function(req, res) {
@@ -148,7 +148,7 @@ router.post('/reset-password', function(req, res) {
   var email = req.session.reset.email;
   // destory the session immediately after retrieving the stored email //
   req.session.destroy();
-  AM.updatePassword(email, nPass, function(e, o){
+  modelAccountManager.updatePassword(email, nPass, function(e, o){
     if (o){
       res.send('ok', 200);
     }	else{
@@ -160,13 +160,13 @@ router.post('/reset-password', function(req, res) {
 // view & delete accounts //
 
 router.get('/print', function(req, res) {
-  AM.getAllRecords( function(e, accounts){
+  modelAccountManager.getAllRecords( function(e, accounts){
     res.render('print', { title : 'Account List', accts : accounts });
   });
 });
 
 router.post('/delete', function(req, res){
-  AM.deleteAccount(req.body.id, function(e, obj){
+  modelAccountManager.deleteAccount(req.body.id, function(e, obj){
     if (!e){
       res.clearCookie('user');
       res.clearCookie('pass');
@@ -178,10 +178,59 @@ router.post('/delete', function(req, res){
 });
 
 router.get('/reset', function(req, res) {
-  AM.delAllRecords(function(){
+  modelAccountManager.delAllRecords(function(){
     res.redirect('/print');
   });
 });
+
+
+/* GET Userlist page. */
+router.get('/userlist', function(req, res) {
+    var db = req.db;
+    var collection = db.get('usercollection');
+    collection.find({},{},function(e,docs){
+        res.render('userlist', {
+            "userlist" : docs
+        });
+    });
+});
+
+/* GET New User page. */
+router.get('/newuser', function(req, res) {
+    res.render('newuser', { title: 'Add New User' });
+});
+
+/* POST to Add User Service */
+router.post('/adduser', function(req, res) {
+
+    // Set our internal DB variable
+    var db = req.db;
+
+    // Get our form values. These rely on the "name" attributes
+    var userName = req.body.username;
+    var userEmail = req.body.useremail;
+
+    // Set our collection
+    var collection = db.get('usercollection');
+
+    // Submit to the DB
+    collection.insert({
+        "username" : userName,
+        "email" : userEmail
+    }, function (err, doc) {
+        if (err) {
+            // If it failed, return error
+            res.send("There was a problem adding the information to the database.");
+        }
+        else {
+            // If it worked, set the header so the address bar doesn't still say /adduser
+            res.location("userlist");
+            // And forward to success page
+            res.redirect("userlist");
+        }
+    });
+});
+
 
 router.get('*', function(req, res) { res.render('404', { title: 'Page Not Found'}); });
 
