@@ -6,4 +6,4 @@ block main_content
     ul
         each app, i in applist
             li
-                a(href="app?{app.packagename}")= user.username
+                a(href="app?{app.packagename}")= app.appname
