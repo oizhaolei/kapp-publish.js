@@ -42,7 +42,6 @@ app.use(function(req,res,next){
 
 
 app.use('/', routes);
-app.use('/apps/', appRoutes);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
