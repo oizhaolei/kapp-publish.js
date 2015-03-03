@@ -14,7 +14,6 @@ var monk = require('monk');
 var db = monk('localhost:27017/nodetest1');
 
 var routes = require('./app/server/router');
-var appRoutes = require('./app/server/app_router');
 var app = express();
 
 app.set('views', path.join(__dirname, 'app/server/views'));
