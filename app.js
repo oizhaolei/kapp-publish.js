@@ -4,6 +4,9 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var favicon = require('serve-favicon');
 
+var logger = require('morgan');
+var debug = require('debug')('my-application');
+
 // New Code
 var mongo = require('mongodb');
 var monk = require('monk');
@@ -67,4 +70,5 @@ app.set('port', process.env.PORT || 4100);
 
 var server = app.listen(app.get('port'), function() {
   debug('Express server listening on port ' + server.address().port);
+
 });
