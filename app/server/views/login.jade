@@ -1,12 +1,11 @@
-
-extends layout
+extends layout_unsigned
 
 block content
 	#login-container
-		form( method="post")#login-form.well.span4
+		form(action='/login', method="post")#login-form.well.span4
 			h1 Hello!
 			p.subheading Please Login To Your Account
-			label Username 
+			label Username
 			input(type="text", name="user", id='user-tf').span4.required
 			label Password
 			input(type="password", name="pass", id='pass-tf').span4.required

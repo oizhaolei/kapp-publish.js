@@ -26,7 +26,7 @@ router.get('/', function(req, res){
   }
 });
 
-router.post('/', function(req, res){
+router.post('/login', function(req, res){
   modelAccountManager.manualLogin(req.param('user'), req.param('pass'), function(e, o){
     if (!o){
       res.send(e, 400);
@@ -41,22 +41,7 @@ router.post('/', function(req, res){
   });
 });
 
-// logged-in user homepage //
-
-router.get('/home', function(req, res) {
-  if (req.session.user == null){
-    // if user is not logged-in redirect back to login page //
-    res.redirect('/');
-  }   else{
-    res.render('home', {
-      title : 'Control Panel',
-      countries : modelContryList,
-      udata : req.session.user
-    });
-  }
-});
-
-router.post('/home', function(req, res){
+router.post('/update_account', function(req, res){
   if (req.param('user') != undefined) {
     modelAccountManager.updateAccount({
       user 		: req.param('user'),
@@ -77,17 +62,19 @@ router.post('/home', function(req, res){
 	res.send('ok', 200);
       }
     });
-  }	else if (req.param('logout') == 'true'){
+  }
+});
+
+router.post('/logout', function(req, res){
     res.clearCookie('user');
     res.clearCookie('pass');
     req.session.destroy(function(e){ res.send('ok', 200); });
-  }
 });
 
 // creating new accounts //
 
 router.get('/signup', function(req, res) {
-  res.render('signup', {  title: 'Signup', countries : CT });
+  res.render('signup', {  title: 'Signup', countries : modelContryList });
 });
 
 router.post('/signup', function(req, res){
@@ -159,7 +146,6 @@ router.post('/reset-password', function(req, res) {
 });
 
 // view & delete accounts //
-
 router.get('/print', function(req, res) {
   modelAccountManager.getAllRecords( function(e, accounts){
     res.render('print', { title : 'Account List', accts : accounts });
@@ -192,7 +178,10 @@ router.get('/apps', function(req, res) {
   }
 
   modelAppManager.getMyApps(function(apps){
-    res.render('applist', {
+    res.render('apps', {
+      'udata' : req.session.user,
+      'pathToAssets': '/dashboard',
+      'pathToSelectedTemplateWithinBootstrap' : '/dashboard',
       "applist" : apps
     });
   });
@@ -205,7 +194,11 @@ router.get('/newapp', function(req, res) {
     res.redirect('/');
     return;
   }
-  res.render('newapp', { title: 'Add New App' });
+  res.render('appnew', {
+    'udata' : req.session.user,
+    'pathToAssets': '/dashboard',
+    'pathToSelectedTemplateWithinBootstrap' : '/dashboard',
+  });
 });
 
 /* POST to Add App Service */
@@ -216,26 +209,24 @@ router.post('/addapp', function(req, res) {
     return;
   }
 
-
   // Get our form values. These rely on the "name" attributes
   var appname = req.body.appname;
-  var packageName = req.body.packageName;
+  var packagename = req.body.packagename;
 
 
   // Submit to the DB
-  modelAppManager.addApp(appname, packageName, function (err, doc) {
+  modelAppManager.addApp(appname, packagename, function (err, doc) {
     if (err) {
       // If it failed, return error
       res.send("There was a problem adding the information to the database.");
     } else {
       // If it worked, set the header so the address bar doesn't still say /addapp
-      res.location("applist");
+      res.location("apps");
       // And forward to success page
-      res.redirect("applist");
+      res.redirect("apps");
     }
   });
 });
-
 
 router.get('*', function(req, res) { res.render('404', { title: 'Page Not Found'}); });
 

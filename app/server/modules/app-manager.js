@@ -12,19 +12,11 @@ exports.getMyApps = function(callback) {
   });
 };
 
-exports.addApp = function(appname, packageName, callback) {
+exports.addApp = function(appname, packagename, callback) {
   apps.insert({
     "appname" : appname,
-    "packagename" : packageName
+    "packagename" : packagename
   }, function(e, o) {
     callback(e, o);
   });
-};
-
-var findById = function(id, callback) {
-  apps.findOne({_id: getObjectId(id)},
-	       function(e, res) {
-		 if (e) callback(e)
-		 else callback(null, res)
-	       });
 };

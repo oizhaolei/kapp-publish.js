@@ -1,0 +1,21 @@
+button#btn-add-app.btn.btn-primary.btn-lg(role='button') Add a new app &raquo;
+h2.sub-header App List
+.table-responsive
+  table.table.table-striped
+    thead
+      tr
+        th Name
+        th Version
+        th Price
+        th Installed
+        th Rank
+        th Status
+    tbody
+      each app, i in applist
+        tr
+          td= app.packagename
+          td= app.appname
+          td Free
+          td 2,300
+          td 30
+          td deployed

@@ -1,0 +1,11 @@
+extends layout_signed
+
+block sidebar
+  include modals/sidebar
+
+block main
+  include modals/dashboard
+  include modals/applist
+
+block scripts
+  script(src='/js/views/apps.js')

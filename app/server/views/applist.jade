@@ -1,9 +1,0 @@
-extends main_layout
-
-block main_content
-    h1.
-        App List
-    ul
-        each app, i in applist
-            li
-                a(href="app?#{app.packagename}")=app.appname
