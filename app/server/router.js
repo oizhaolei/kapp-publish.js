@@ -1,5 +1,9 @@
+var config = require('../../config.json');
 var express = require('express');
 var router = express.Router();
+var formidable = require("formidable");
+var fs = require("fs");
+var ApkReader = require('adbkit-apkreader')
 
 var modelContryList = require('./modules/country-list');
 var modelAccountManager = require('./modules/account-manager');
@@ -211,11 +215,9 @@ router.post('/addapp', function(req, res) {
 
   // Get our form values. These rely on the "name" attributes
   var appname = req.body.appname;
-  var packagename = req.body.packagename;
-
 
   // Submit to the DB
-  modelAppManager.addApp(appname, packagename, function (err, doc) {
+  modelAppManager.addApp(appname, function (err, doc) {
     if (err) {
       // If it failed, return error
       res.send("There was a problem adding the information to the database.");
@@ -226,6 +228,53 @@ router.post('/addapp', function(req, res) {
       res.redirect("apps");
     }
   });
+});
+
+router.get('/app', function(req, res) {
+  if (req.session.user == null){
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/');
+    return;
+  }
+  var appId = req.param('id');
+
+  modelAppManager.getApp(appId, function(app){
+    res.render('app', {
+      'udata' : req.session.user,
+      'pathToAssets': '/dashboard',
+      'pathToSelectedTemplateWithinBootstrap' : '/dashboard',
+      "app" : app
+    });
+  });
+});
+
+router.post('/uploadapk', function(req, res) {
+  if (req.session.user == null){
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/');
+    return;
+  }
+
+  var form = new formidable.IncomingForm();
+  form.parse(req, function(error, fields, files) {
+    console.dir(files);
+    console.log(files.apkfile.path);
+    var reader = ApkReader.readFile(files.apkfile.path);
+    var manifest = reader.readManifestSync()
+
+    console.dir(manifest);
+
+    // var originalFile = getSaveTo(config.apk.saveto + config.originalPrefix, filename);//default as a image
+    // fs.rename(files.apkfile.path, originalFile, function(err) {
+    //   if (!err)
+    //     handleImage(response, filename, originalFile);
+    //   else
+    //     logger.error(err);
+    // });
+  });
+
+  var appid = req.param('id');
+  res.redirect('/app?id=' + appid);
 });
 
 router.get('*', function(req, res) { res.render('404', { title: 'Page Not Found'}); });

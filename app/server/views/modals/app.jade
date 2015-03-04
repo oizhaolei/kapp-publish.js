@@ -1,0 +1,41 @@
+h2.sub-header= app.appname
+  form(action='/updateapp', method="post")#app-add-form.well
+    div.form-group
+      label(for='appname') Name
+      input#inputAppName(type="text", placeholder="appname", name="appname", value="#{app.appname}").form-control.required
+    div.form-group
+      label(for='shortdesc') Short Description
+      input#inputShortDesc(type="text", placeholder="shortdesc", name="shortdesc", value="#{app.shortdesc}").form-control.required
+    div.form-group
+      label(for='desc') Description
+      textarea#inputDesc(name="desc").form-control.required
+        #{app.desc}
+    button(type="submit")#btn-app-add.btn.btn-default
+      i.icon-lock.icon-white
+      | Save
+
+h2.sub-header APK
+  form(action='/uploadapk?id=#{app._id}', method="post", enctype="multipart/form-data")#apk-upload-form.form-inline.well
+    div.form-group
+      input#inputFile(type="file", name="apkfile").form-control.required
+    button(type="submit")#btn-app-add.btn.btn-default
+      i.icon-lock.icon-white
+      | Upload
+if app.apks
+  h2.sub-header Apk List
+  .table-responsive
+    table.table.table-striped
+      thead
+        tr
+          th Version
+          th Upload
+          th Status
+          th Detail
+      tbody
+        each apk, i in app.apks
+          tr
+            td=  apk.versionCode
+            td=  apk.uploadDate
+            td=  apk.status
+            td
+              a(href="/apk?id=#{apk._id}") show details

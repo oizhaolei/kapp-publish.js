@@ -15,18 +15,20 @@
   },
   "private": true,
   "dependencies": {
-    "body-parser": "~1.0.0",
-    "cookie-parser": "~1.0.1",
-    "debug": "~0.7.4",
-    "emailjs": "0.3.3",
-    "express": "~4.0.0",
-    "express-session": "^1.10.3",
+    "adbkit-apkreader": "^1.0.0",
+    "body-parser": "*",
+    "cookie-parser": "*",
+    "debug": "*",
+    "emailjs": "*",
+    "express": "*",
+    "express-session": "*",
+    "formidable": "*",
     "jade": "~1.3.0",
-    "moment": "1.7.2",
-    "mongodb": "*",
+    "moment": "*",
+    "mongodb": "^1.4.33",
     "monk": "*",
-    "morgan": "~1.0.0",
-    "serve-favicon": "~2.1.3",
-    "stylus": "0.31.0"
+    "morgan": "*",
+    "serve-favicon": "*",
+    "stylus": "*"
   }
 }

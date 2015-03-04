@@ -12,10 +12,15 @@ exports.getMyApps = function(callback) {
   });
 };
 
-exports.addApp = function(appname, packagename, callback) {
+exports.getApp = function(appId, callback) {
+  apps.findOne({_id:appId}, function(e, o){
+    callback(o);
+  });
+};
+
+exports.addApp = function(appname, callback) {
   apps.insert({
-    "appname" : appname,
-    "packagename" : packagename
+    "appname" : appname
   }, function(e, o) {
     callback(e, o);
   });

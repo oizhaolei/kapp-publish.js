@@ -13,8 +13,9 @@ h2.sub-header App List
     tbody
       each app, i in applist
         tr
-          td= app.packagename
-          td= app.appname
+          td
+            a(href="/app?id=#{app._id}")=  app.appname
+          td= 0.01
           td Free
           td 2,300
           td 30

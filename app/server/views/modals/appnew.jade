@@ -1,9 +1,8 @@
 h2.sub-header New App
     form(action='/addapp', method="post")#app-add-form.well.span4
-      label Name
-      input#inputAppName(type="text", placeholder="appname", name="appname").span4.required
-      label Package
-      input#inputPackageName(type="text", placeholder="packagename", name="packagename").span4.required
-      button(type="submit")#btn-app-add.btn.btn-primary
+      div.form-group
+        label(for='appname') Name
+        input#inputAppName(type="text", placeholder="appname", name="appname").form-control.required
+      button(type="submit")#btn-app-add.btn.btn-default
         i.icon-lock.icon-white
         | Add

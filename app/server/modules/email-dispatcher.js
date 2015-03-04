@@ -1,13 +1,13 @@
 
-var ES = require('./email-settings');
+var config = require('../../../config.json');
 var EM = {};
 module.exports = EM;
 
 EM.server = require("emailjs/email").server.connect({
 
-	host 	    : ES.host,
-	user 	    : ES.user,
-	password    : ES.password,
+	host 	    : config.smtp.host,
+	user 	    : config.smtp.user,
+	password    : config.smtp.password,
 	ssl		    : true
 
 });
@@ -15,7 +15,7 @@ EM.server = require("emailjs/email").server.connect({
 EM.dispatchResetPasswordLink = function(account, callback)
 {
 	EM.server.send({
-		from         : ES.sender,
+		from         : config.smtp.sender,
 		to           : account.email,
 		subject      : 'Password Reset',
 		text         : 'something went wrong... :(',
