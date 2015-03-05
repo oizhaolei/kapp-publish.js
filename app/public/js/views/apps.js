@@ -1,4 +1,4 @@
 // handle add app //
 $('#btn-add-app').click(function(){
-  window.location.href="/newapp";
+  window.location.href="/app/new";
 });

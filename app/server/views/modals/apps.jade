@@ -10,13 +10,19 @@ h2.sub-header App List
         th Installed
         th Rank
         th Status
+        th Delete
     tbody
-      each app, i in applist
+      each app, i in apps
         tr
           td
             a(href="/app?id=#{app._id}")=  app.appname
-          td= 0.01
+          if app.manifest
+            td= app.manifest.versionCode + "(" + app.manifest.versionName + ")"
+          else
+            td -
           td Free
           td 2,300
           td 30
           td deployed
+          td
+            a(href="/app/del?id=#{app._id}") Delete

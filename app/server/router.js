@@ -3,7 +3,7 @@ var express = require('express');
 var router = express.Router();
 var formidable = require("formidable");
 var fs = require("fs");
-var ApkReader = require('adbkit-apkreader')
+var apkReader = require('adbkit-apkreader');
 
 var modelContryList = require('./modules/country-list');
 var modelAccountManager = require('./modules/account-manager');
@@ -181,18 +181,18 @@ router.get('/apps', function(req, res) {
     return;
   }
 
-  modelAppManager.getMyApps(function(apps){
+  modelAppManager.getMyApps(req.session.user.email, function(apps){
     res.render('apps', {
       'udata' : req.session.user,
       'pathToAssets': '/dashboard',
       'pathToSelectedTemplateWithinBootstrap' : '/dashboard',
-      "applist" : apps
+      "apps" : apps
     });
   });
 });
 
 /* GET New App page. */
-router.get('/newapp', function(req, res) {
+router.get('/app/new', function(req, res) {
   if (req.session.user == null){
     // if user is not logged-in redirect back to login page //
     res.redirect('/');
@@ -201,12 +201,31 @@ router.get('/newapp', function(req, res) {
   res.render('appnew', {
     'udata' : req.session.user,
     'pathToAssets': '/dashboard',
-    'pathToSelectedTemplateWithinBootstrap' : '/dashboard',
+    'pathToSelectedTemplateWithinBootstrap' : '/dashboard'
   });
 });
 
+router.get('/app/del', function(req, res) {
+  if (req.session.user == null){
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/');
+    return;
+  }
+
+  var appid = req.param('id');
+
+  // Submit to the DB
+  modelAppManager.delApp(appid, function (err, doc) {
+    if (err) {
+      // If it failed, return error
+      res.send("There was a problem adding the information to the database.");
+    } else {
+      res.redirect("/apps");
+    }
+  });
+});
 /* POST to Add App Service */
-router.post('/addapp', function(req, res) {
+router.post('/app/add', function(req, res) {
   if (req.session.user == null){
     // if user is not logged-in redirect back to login page //
     res.redirect('/');
@@ -217,15 +236,12 @@ router.post('/addapp', function(req, res) {
   var appname = req.body.appname;
 
   // Submit to the DB
-  modelAppManager.addApp(appname, function (err, doc) {
+  modelAppManager.addApp(req.session.user.email, appname, function (err, doc) {
     if (err) {
       // If it failed, return error
       res.send("There was a problem adding the information to the database.");
     } else {
-      // If it worked, set the header so the address bar doesn't still say /addapp
-      res.location("apps");
-      // And forward to success page
-      res.redirect("apps");
+      res.redirect("/apps");
     }
   });
 });
@@ -236,19 +252,42 @@ router.get('/app', function(req, res) {
     res.redirect('/');
     return;
   }
-  var appId = req.param('id');
+  var appid = req.param('id');
 
-  modelAppManager.getApp(appId, function(app){
+  modelAppManager.getApp(appid, function(app, apks){
     res.render('app', {
       'udata' : req.session.user,
       'pathToAssets': '/dashboard',
       'pathToSelectedTemplateWithinBootstrap' : '/dashboard',
-      "app" : app
+      "app" : app,
+      "apks" : apks
     });
   });
 });
 
-router.post('/uploadapk', function(req, res) {
+router.post('/app/update', function(req, res) {
+  if (req.session.user == null){
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/');
+    return;
+  }
+  var appid = req.param('id');
+
+  var appname = req.body.appname;
+  var shortDesc = req.body.shortdesc;
+  var desc = req.body.desc;
+
+  // Submit to the DB
+  modelAppManager.updateApp(appid, appname, shortDesc, desc, function (err, doc) {
+    if (err) {
+      res.send("There was a problem update the information to the database.");
+    } else {
+      res.redirect('/app?id=' + appid);
+    }
+  });
+});
+
+router.post('/apk/upload', function(req, res) {
   if (req.session.user == null){
     // if user is not logged-in redirect back to login page //
     res.redirect('/');
@@ -258,23 +297,33 @@ router.post('/uploadapk', function(req, res) {
   var form = new formidable.IncomingForm();
   form.parse(req, function(error, fields, files) {
     console.dir(files);
-    console.log(files.apkfile.path);
-    var reader = ApkReader.readFile(files.apkfile.path);
+    var reader = apkReader.readFile(files.apkfile.path);
     var manifest = reader.readManifestSync()
 
     console.dir(manifest);
 
-    // var originalFile = getSaveTo(config.apk.saveto + config.originalPrefix, filename);//default as a image
-    // fs.rename(files.apkfile.path, originalFile, function(err) {
-    //   if (!err)
-    //     handleImage(response, filename, originalFile);
-    //   else
-    //     logger.error(err);
-    // });
-  });
+    var destPath = config.apk.saveto + '/' + manifest.package;
+    try {
+      fs.mkdirSync(destPath);
+    } catch(e) {
+    }
+    var destFile = destPath + '/' + manifest.versionCode + '.apk';
+    fs.rename(files.apkfile.path, destFile, function(err) {
+      console.log(destFile);
+    });
 
-  var appid = req.param('id');
-  res.redirect('/app?id=' + appid);
+    var appid = req.param('id');
+
+    // Submit to the DB
+    modelAppManager.addApk(appid, manifest, function (err, doc) {
+      if (err) {
+        res.send("There was a problem update the information to the database.");
+      } else {
+        res.redirect('/app?id=' + appid);
+      }
+    });
+
+  });
 });
 
 router.get('*', function(req, res) { res.render('404', { title: 'Page Not Found'}); });
