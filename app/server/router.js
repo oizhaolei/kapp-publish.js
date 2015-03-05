@@ -272,13 +272,28 @@ router.post('/app/update', function(req, res) {
     return;
   }
   var appid = req.param('id');
-
-  var appname = req.body.appname;
-  var shortDesc = req.body.shortdesc;
-  var desc = req.body.desc;
+  console.dir(req.body);
 
   // Submit to the DB
-  modelAppManager.updateApp(appid, appname, shortDesc, desc, function (err, doc) {
+  modelAppManager.updateApp(appid, req.body, function (err, doc) {
+    if (err) {
+      res.send("There was a problem update the information to the database.");
+    } else {
+      res.redirect('/app?id=' + appid);
+    }
+  });
+});
+
+router.get('/app/toggledeploy', function(req, res) {
+  if (req.session.user == null){
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/');
+    return;
+  }
+  var appid = req.param('id');
+
+  // Submit to the DB
+  modelAppManager.toggleDeploy(appid, function (err, doc) {
     if (err) {
       res.send("There was a problem update the information to the database.");
     } else {
@@ -296,19 +311,16 @@ router.post('/apk/upload', function(req, res) {
 
   var form = new formidable.IncomingForm();
   form.parse(req, function(error, fields, files) {
-    console.dir(files);
-    var reader = apkReader.readFile(files.apkfile.path);
+    var reader = apkReader.readFile(files.file.path);
     var manifest = reader.readManifestSync()
 
-    console.dir(manifest);
-
-    var destPath = config.apk.saveto + '/' + manifest.package;
+    var destPath = config.upload.apk + '/' + manifest.package;
     try {
       fs.mkdirSync(destPath);
     } catch(e) {
     }
     var destFile = destPath + '/' + manifest.versionCode + '.apk';
-    fs.rename(files.apkfile.path, destFile, function(err) {
+    fs.rename(files.file.path, destFile, function(err) {
       console.log(destFile);
     });
 
@@ -321,6 +333,49 @@ router.post('/apk/upload', function(req, res) {
       } else {
         res.redirect('/app?id=' + appid);
       }
+    });
+
+  });
+});
+
+router.post('/apk/icon512_upload', function(req, res) {
+  if (req.session.user == null){
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/');
+    return;
+  }
+
+  var appid = req.param('id');
+
+  var form = new formidable.IncomingForm();
+  form.parse(req, function(error, fields, files) {
+    console.dir(files);
+
+    var destFile = config.upload.icon512 + '/icon_512_' + appid + '.png';
+    fs.rename(files.file.path, destFile, function(err) {
+      console.log(destFile);
+      res.redirect('/app?id=' + appid);
+    });
+  });
+});
+
+router.post('/apk/icon1024_500_upload', function(req, res) {
+  if (req.session.user == null){
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/');
+    return;
+  }
+
+  var appid = req.param('id');
+
+  var form = new formidable.IncomingForm();
+  form.parse(req, function(error, fields, files) {
+    console.dir(files);
+
+    var destFile = config.upload.icon1024_500 + '/icon_1024_500_' + appid + '.png';
+    fs.rename(files.file.path, destFile, function(err) {
+      console.log(destFile);
+      res.redirect('/app?id=' + appid);
     });
 
   });

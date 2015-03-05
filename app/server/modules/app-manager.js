@@ -8,9 +8,9 @@ var db = monk(config.mongodb);
 var apps = db.get('apps');
 var apks = db.get('apks');
 
-exports.getMyApps = function(email, callback) {
+exports.getMyApps = function(owner_email, callback) {
   apps.find({
-    "email" : email
+    "owner_email" : owner_email
   }, {
     "sort": "appname"
   }, function(e, o) {
@@ -18,46 +18,65 @@ exports.getMyApps = function(email, callback) {
   });
 };
 
-exports.getApp = function(appid, callback) {
-  apps.findOne({_id:appid}, function(e, app){
+exports.getApp = function(id, callback) {
+  apps.findOne({
+    _id : id
+  }, function(e, app){
     apks.find({
-      app_id : appid,
+      app_id : id
     }, {}, function(e, apks){
       callback(app, apks);
     });
   });
 };
 
-exports.delApp = function(appid, callback) {
-  apps.remove({_id : appid}, function(e){
-    apks.remove({app_id : appid}, function(e){
+exports.delApp = function(id, callback) {
+  apps.remove({
+    _id : id
+  }, function(e){
+    apks.remove({app_id : id}, function(e){
       callback(e);
     });
   });
 };
 
-exports.addApp = function(email, appname, callback) {
+exports.addApp = function(owner_email, appname, callback) {
   apps.insert({
-    "email" : email,
-    "appname" : appname
+    "owner_email" : owner_email,
+    "appname" : appname,
+    "deploy" : false,
+    createdate : new Date()
   }, function(e, o) {
     callback(e, o);
   });
 };
 
-exports.updateApp = function(id, appname, shortDesc, desc, callback) {
+exports.updateApp = function(id, update, callback) {
+  update.updatedate = new Date();
   apps.update({
     _id : id
   }, {
-    $set : {
-      "appname" : appname,
-      shortdesc : shortDesc,
-      desc : desc,
-      updatedate : new Date()
-    }
+    $set : update
   }, function(e, o) {
       callback(e, o);
     });
+};
+
+exports.toggleDeploy = function(id, callback) {
+  apps.findOne({
+    _id : id
+  }, function(e, app){
+    var deploy =  app.deploy;
+    apps.update({
+      _id : id
+    }, {
+      $set : {
+        "deploy" : !deploy
+      }
+    }, function(e, o) {
+      callback(e, o);
+    });
+  });
 };
 
 exports.addApk = function(appid, manifest, callback) {

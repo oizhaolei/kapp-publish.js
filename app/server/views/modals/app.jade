@@ -1,29 +1,114 @@
-h2.sub-header= app.appname
-  form(action='/app/update?id=#{app._id}', method="post")#app-add-form.well
-    div.form-group
-      label(for='appname') Name
+div.row
+  div.col-sm-1
+    img(src="/icon512/icon_512_#{app._id}.png", width="50px", height="50px")
+  div.col-sm-10
+    h2= app.appname
+  div.col-sm-1
+    a(href="/app/toggledeploy?id=#{app._id}").btn.btn-danger.btn-lg(role='button')
+      if app.deploy
+        | Undeploy
+      else
+        | Deploy
+h2.sub-header App Detail
+form(action='/app/update?id=#{app._id}', method="post")#app-add-form.form-horizontal.well
+  div.form-group
+    label(for='appname').control-label.col-sm-2 Name
+    div.col-sm-10
       input#inputAppName(type="text", placeholder="appname", name="appname", value="#{app.appname}").form-control.required
-    div.form-group
-      label(for='shortdesc') Short Description
-      input#inputShortDesc(type="text", placeholder="shortdesc", name="shortdesc", value="#{app.shortdesc}").form-control.required
-    div.form-group
-      label(for='desc') Description
-      textarea#inputDesc(name="desc").form-control.required= app.desc
-    button(type="submit")#btn-app-add.btn.btn-default
-      i.icon-lock.icon-white
-      | Save
+      span.help-block 可使用 30 个
+  div.form-group
+    label(for='summary').control-label.col-sm-2 Summary
+    div.col-sm-10
+      input#inputSummary(type="text", placeholder="summary", name="summary", value="#{app.summary}").form-control.required
+  div.form-group
+    label(for='desc').control-label.col-sm-2 Description
+    div.col-sm-10
+      textarea#inputDesc(name="desc", rows="8").form-control.required= app.desc
+  div.form-group
+    label(for='apptype').control-label.col-sm-2 Type
+    div.col-sm-10
+      select#inputApptype(name="apptype").form-control= app.apptype
+        option(value="application") Application
+        option(value="game") Game
+  div.form-group
+    label(for='category').control-label.col-sm-2 Category
+    div.col-sm-10
+      select#inputCategory(name="category").form-control= app.category
+        option(value="FINANCE") 财务
+        option(value="PERSONALIZATION") 个性化
+        option(value="TOOLS") 工具
+        option(value="SHOPPING") 购物
+        option(value="HEALTH_AND_FITNESS") 健康与健身
+        option(value="TRANSPORTATION") 交通运输
+        option(value="EDUCATION") 教育
+        option(value="TRAVEL_AND_LOCAL") 旅游与本地出行
+        option(value="COMICS") 漫画
+        option(value="MEDIA_AND_VIDEO") 媒体与视频
+        option(value="LIBRARIES_AND_DEMO") 软件与演示
+        option(value="BUSINESS") 商业
+        option(value="SOCIAL") 社交
+        option(value="PHOTOGRAPHY") 摄影
+        option(value="LIFESTYLE") 生活时尚
+        option(value="SPORTS") 体育
+        option(value="WEATHER") 天气
+        option(value="COMMUNICATION") 通讯
+        option(value="BOOKS_AND_REFERENCE") 图书与工具书
+        option(value="PRODUCTIVITY") 效率
+        option(value="NEWS_AND_MAGAZINES") 新闻杂志
+        option(value="MEDICAL") 医药
+        option(value="MUSIC_AND_AUDIO") 音乐与音频
+        option(value="ENTERTAINMENT") 娱乐
+  div.form-group
+    label(for='website').control-label.col-sm-2 Web Site
+    div.col-sm-10
+      input#inputWebsite(type="text", placeholder="website", name="website", value="#{app.website}").form-control.required
+  div.form-group
+    label(for='email').control-label.col-sm-2 Email
+    div.col-sm-10
+      input#inputEmail(type="text", placeholder="email", name="email", value="#{app.email}").form-control.required
+  div.form-group
+    label(for='phonenumber').control-label.col-sm-2 Phone Number
+    div.col-sm-10
+      input#inputPhonenumber(type="text", placeholder="phonenumber", name="phonenumber", value="#{app.phonenumber}").form-control.required
+  div.form-group
+    label(for='privacyurl').control-label.col-sm-2 Privacy Url
+    div.col-sm-10
+      input#inputPrivacyurl(type="text", placeholder="privacyurl", name="privacyurl", value="#{app.privacyurl}").form-control.required
+  div.form-group
+    div.col-sm-offset-2.col-sm-10
+      button(type="submit")#btn-app-add.btn.btn-default
+        i.icon-lock.icon-white
+        | Save
+
+h2.sub-header High Quanlity Icon(512x512)
+form(action='/apk/icon512_upload?id=#{app._id}', method="post", enctype="multipart/form-data")#apk-upload-form.form-inline.well
+  div.form-group
+    input#inputFile(type="file", name="file").form-control.required
+  button(type="submit")#btn-app-add.btn.btn-default
+    i.icon-lock.icon-white
+    | Upload
+  img(src="/icon512/icon_512_#{app._id}.png", width="50px", height="50px")
+
+h2.sub-header Top Image(1024*500)
+form(action='/apk/icon1024_500_upload?id=#{app._id}', method="post", enctype="multipart/form-data")#apk-upload-form.form-inline.well
+  div.form-group
+    input#inputFile(type="file", name="file").form-control.required
+  button(type="submit")#btn-app-add.btn.btn-default
+    i.icon-lock.icon-white
+    | Upload
+  img(src="/icon1024_500/icon_1024_500_#{app._id}.png", width="102px", height="50px")
 
 h2.sub-header APK
-  form(action='/apk/upload?id=#{app._id}', method="post", enctype="multipart/form-data")#apk-upload-form.form-inline.well
-    div.form-group
-      input#inputFile(type="file", name="apkfile").form-control.required
-    button(type="submit")#btn-app-add.btn.btn-default
-      i.icon-lock.icon-white
-      | Upload
+form(action='/apk/upload?id=#{app._id}', method="post", enctype="multipart/form-data")#apk-upload-form.form-inline.well
+  div.form-group
+    input#inputFile(type="file", name="file").form-control.required
+  button(type="submit")#btn-app-add.btn.btn-default
+    i.icon-lock.icon-white
+    | Upload
 if apks
   h2.sub-header Apk List
   .table-responsive
-    table.table.table-striped
+    table.table.table-striped.table-hover
       thead
         tr
           th Version

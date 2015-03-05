@@ -1,7 +1,10 @@
-button#btn-add-app.btn.btn-primary.btn-lg(role='button') Add a new app &raquo;
-h2.sub-header App List
+div.row
+  div.col-sm-10
+    h2.sub-header App List
+  div.col-sm-2
+    button#btn-add-app.btn.btn-warning.btn-lg(role='button') Create new app &raquo;
 .table-responsive
-  table.table.table-striped
+  table.table.table-striped.table-hover
     thead
       tr
         th Name
@@ -15,14 +18,16 @@ h2.sub-header App List
       each app, i in apps
         tr
           td
+            img(src="/icon512/icon_512_#{app._id}.png", width="50px", height="50px")
             a(href="/app?id=#{app._id}")=  app.appname
-          if app.manifest
-            td= app.manifest.versionCode + "(" + app.manifest.versionName + ")"
-          else
-            td -
+          td
+            if app.manifest
+              = app.manifest.versionCode + "(" + app.manifest.versionName + ")"
+            else
+              | -
           td Free
           td 2,300
           td 30
-          td deployed
+          td= app.deploy?"Deployed":"Deploy canceled"
           td
             a(href="/app/del?id=#{app._id}") Delete

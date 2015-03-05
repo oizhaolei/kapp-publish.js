@@ -23,6 +23,7 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, 'app/public')));
+app.use(express.static(path.join(__dirname, 'repository/')));
 app.use(session({
   resave: true,
   saveUninitialized: true,
