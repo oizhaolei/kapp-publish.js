@@ -81,7 +81,7 @@ form(action='/app/update?id=#{app._id}', method="post")#app-add-form.form-horizo
         | Save
 
 h2.sub-header High Quanlity Icon(512x512)
-form(action='/apk/icon512_upload?id=#{app._id}', method="post", enctype="multipart/form-data")#apk-upload-form.form-inline.well
+form(action='/upload/icon512?id=#{app._id}', method="post", enctype="multipart/form-data")#apk-upload-form.form-inline.well
   div.form-group
     input#inputFile(type="file", name="file").form-control.required
   button(type="submit")#btn-app-add.btn.btn-default
@@ -90,7 +90,7 @@ form(action='/apk/icon512_upload?id=#{app._id}', method="post", enctype="multipa
   img(src="/icon512/icon_512_#{app._id}.png", width="50px", height="50px")
 
 h2.sub-header Top Image(1024*500)
-form(action='/apk/icon1024_500_upload?id=#{app._id}', method="post", enctype="multipart/form-data")#apk-upload-form.form-inline.well
+form(action='/upload/icon1024_500?id=#{app._id}', method="post", enctype="multipart/form-data")#apk-upload-form.form-inline.well
   div.form-group
     input#inputFile(type="file", name="file").form-control.required
   button(type="submit")#btn-app-add.btn.btn-default
@@ -99,7 +99,7 @@ form(action='/apk/icon1024_500_upload?id=#{app._id}', method="post", enctype="mu
   img(src="/icon1024_500/icon_1024_500_#{app._id}.png", width="102px", height="50px")
 
 h2.sub-header APK
-form(action='/apk/upload?id=#{app._id}', method="post", enctype="multipart/form-data")#apk-upload-form.form-inline.well
+form(action='/upload/apk?id=#{app._id}', method="post", enctype="multipart/form-data")#apk-upload-form.form-inline.well
   div.form-group
     input#inputFile(type="file", name="file").form-control.required
   button(type="submit")#btn-app-add.btn.btn-default
