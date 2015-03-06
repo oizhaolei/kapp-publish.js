@@ -31,31 +31,32 @@ module.exports = function (app) {
   });
 
   app.post('/login', function(req, res){
-    modelAccountManager.manualLogin(req.query.user, req.query.pass, function(e, o){
+    console.dir(req);
+    modelAccountManager.manualLogin(req.body.user, req.body.pass, function(e, o){
       if (!o){
-        res.send(e, 400);
+        res.status(400).send(e);
       }	else{
         req.session.user = o;
-        if (req.query.remember == 'true'){
+        if (req.body.remember == 'true'){
 	  res.cookie('user', o.user, { maxAge: 900000 });
 	  res.cookie('pass', o.pass, { maxAge: 900000 });
         }
-        res.send(o, 200);
+        res.status(200).send(o);
       }
     });
   });
 
   app.post('/update_account', function(req, res){
-    if (req.query.user != undefined) {
+    if (req.body.user != undefined) {
       modelAccountManager.updateAccount({
-        user 		: req.query.user,
-        name 		: req.query.name,
-        email 		: req.query.email,
-        country 	: req.query.country,
-        pass		: req.query.pass
+        user 		: req.body.user,
+        name 		: req.body.name,
+        email 		: req.body.email,
+        country 	: req.body.country,
+        pass		: req.body.pass
       }, function(e, o){
         if (e){
-	  res.send('error-updating-account', 400);
+	  res.status(400).send('error-updating-account');
         }	else{
 	  req.session.user = o;
 	  // update the user's login cookies if they exists //
@@ -63,7 +64,7 @@ module.exports = function (app) {
 	    res.cookie('user', o.user, { maxAge: 900000 });
 	    res.cookie('pass', o.pass, { maxAge: 900000 });
 	  }
-	  res.send('ok', 200);
+	  res.status(200).send('ok');
         }
       });
     }
@@ -72,7 +73,7 @@ module.exports = function (app) {
   app.post('/logout', function(req, res){
     res.clearCookie('user');
     res.clearCookie('pass');
-    req.session.destroy(function(e){ res.send('ok', 200); });
+    req.session.destroy(function(e){ res.status(200).send('ok'); });
   });
 
   // creating new accounts //
@@ -83,16 +84,16 @@ module.exports = function (app) {
 
   app.post('/signup', function(req, res){
     modelAccountManager.addNewAccount({
-      name 	: req.query.name,
-      email 	: req.query.email,
-      user 	: req.query.user,
-      pass	: req.query.pass,
-      country : req.query.country
+      name 	: req.body.name,
+      email 	: req.body.email,
+      user 	: req.body.user,
+      pass	: req.body.pass,
+      country : req.body.country
     }, function(e){
       if (e){
-        res.send(e, 400);
+        res.status(400).send(e);
       }	else{
-        res.send('ok', 200);
+        res.status(200).send('ok');
       }
     });
   });
@@ -101,21 +102,21 @@ module.exports = function (app) {
 
   app.post('/lost-password', function(req, res){
     // look up the user's account via their email //
-    modelAccountManager.getAccountByEmail(req.query.email, function(o){
+    modelAccountManager.getAccountByEmail(req.body.email, function(o){
       if (o){
-        res.send('ok', 200);
+        res.status(200).send('ok');
         modelEmailDispatcher.dispatchResetPasswordLink(o, function(e, m){
 	  // this callback takes a moment to return //
 	  // should add an ajax loader to give user feedback //
 	  if (!e) {
-	    //	res.send('ok', 200);
+	    //	res.status(200).send('ok');
 	  }	else{
-	    res.send('email-server-error', 400);
+	    res.status(400).send('email-server-error');
 	    for (k in e) console.log('error : ', k, e[k]);
 	  }
         });
       }	else{
-        res.send('email-not-found', 400);
+        res.status(400).send('email-not-found');
       }
     });
   });
@@ -135,16 +136,16 @@ module.exports = function (app) {
   });
 
   app.post('/reset-password', function(req, res) {
-    var nPass = req.query.pass;
+    var nPass = req.body.pass;
     // retrieve the user's email from the session to lookup their account and reset password //
     var email = req.session.reset.email;
     // destory the session immediately after retrieving the stored email //
     req.session.destroy();
     modelAccountManager.updatePassword(email, nPass, function(e, o){
       if (o){
-        res.send('ok', 200);
+        res.status(200).send('ok');
       }	else{
-        res.send('unable to update password', 400);
+        res.status(400).send('unable to update password');
       }
     });
   });
@@ -161,9 +162,9 @@ module.exports = function (app) {
       if (!e){
         res.clearCookie('user');
         res.clearCookie('pass');
-        req.session.destroy(function(e){ res.send('ok', 200); });
+        req.session.destroy(function(e){ res.status(200).send('ok'); });
       }	else{
-        res.send('record not found', 400);
+        res.status(400).send('record not found');
       }
     });
   });

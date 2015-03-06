@@ -27,13 +27,13 @@ form(action='/app/update?id=#{app._id}', method="post")#app-add-form.form-horizo
   div.form-group
     label(for='apptype').control-label.col-sm-2 Type
     div.col-sm-10
-      select#inputApptype(name="apptype").form-control= app.apptype
+      select#inputApptype(name="apptype", value="#{app.apptype}").form-control= app.apptype
         option(value="application") Application
         option(value="game") Game
   div.form-group
     label(for='category').control-label.col-sm-2 Category
     div.col-sm-10
-      select#inputCategory(name="category").form-control= app.category
+      select#inputCategory(name="category", value="#{app.category}").form-control= app.category
         option(value="FINANCE") 财务
         option(value="PERSONALIZATION") 个性化
         option(value="TOOLS") 工具
