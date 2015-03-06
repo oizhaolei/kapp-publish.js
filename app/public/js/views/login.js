@@ -11,8 +11,8 @@ $(document).ready(function(){
 			if (lv.validateForm() == false){
 				return false;
 			} 	else{
-			// append 'remember-me' option to formData to write local cookie //
-				formData.push({name:'remember-me', value:$("input:checkbox:checked").length == 1})
+			// append 'remember' option to formData to write local cookie //
+				formData.push({name:'remember', value:$("input:checkbox:checked").length == 1})
 				return true;
 			}
 		},

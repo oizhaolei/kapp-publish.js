@@ -9,7 +9,6 @@ var session = require('express-session');
 var logger = require('morgan');
 var debug = require('debug')('my-application');
 
-var routes = require('./app/server/router');
 var app = express();
 
 app.set('views', path.join(__dirname, 'app/server/views'));
@@ -27,10 +26,20 @@ app.use(express.static(path.join(__dirname, 'repository/')));
 app.use(session({
   resave: true,
   saveUninitialized: true,
-  secret: 'super-duper-secret-secret'
+  secret: 'super-kapp-secret-secret'
 }));
 
-app.use('/', routes);
+var authCheck = function(req, res, next) {
+  if (req.session.user == null){
+    res.redirect('/');
+  } else {
+    next();
+  }
+};
+app.use('/app/*', authCheck);
+app.use('/upload/*', authCheck);
+
+require('./app/server/router')(app);
 
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
