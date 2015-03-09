@@ -40,6 +40,11 @@ app.use('/app/*', authCheck);
 app.use('/upload/*', authCheck);
 
 require('./app/server/router')(app);
+require('./app/server/router_app')(app);
+require('./app/server/router_report')(app);
+app.get('*', function(req, res) {
+  res.render('404', { title: 'Page Not Found'});
+});
 
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
