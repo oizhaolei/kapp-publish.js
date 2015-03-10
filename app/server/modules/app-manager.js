@@ -12,7 +12,7 @@ exports.getMyApps = function(owner_email, callback) {
   apps.find({
     "owner_email" : owner_email
   }, {
-    "sort": "appname"
+    "sort": "name"
   }, function(e, o) {
     callback(o);
   });
@@ -40,19 +40,20 @@ exports.delApp = function(id, callback) {
   });
 };
 
-exports.addApp = function(owner_email, appname, callback) {
+exports.addApp = function(owner_email, name, callback) {
   apps.insert({
     "owner_email" : owner_email,
-    "appname" : appname,
+    "name" : name,
     "deploy" : false,
-    createdate : new Date()
+    added : new Date(),
+    lastupdated : new Date()
   }, function(e, o) {
     callback(e, o);
   });
 };
 
 exports.updateApp = function(id, update, callback) {
-  update.updatedate = new Date();
+  update.lastupdated = new Date();
   apps.update({
     _id : id
   }, {
@@ -71,7 +72,8 @@ exports.toggleDeploy = function(id, callback) {
       _id : id
     }, {
       $set : {
-        "deploy" : !deploy
+        "deploy" : !deploy,
+        lastupdated : new Date()
       }
     }, function(e, o) {
       callback(e, o);
@@ -83,13 +85,14 @@ exports.addApk = function(appid, manifest, callback) {
   apks.insert({
     app_id : appid,
     manifest : manifest,
-    updatedate : new Date()
+    lastupdated : new Date()
   }, function(e, o) {
     apps.update({
       _id : appid
     }, {
       $set: {
-        "manifest" : manifest
+        "manifest" : manifest,
+        lastupdated : new Date()
       }
     }, {
       upsert: true

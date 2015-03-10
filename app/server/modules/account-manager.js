@@ -178,15 +178,15 @@ var validatePassword = function(plainPass, hashedPass, callback)
 
 var getObjectId = function(id)
 {
-	return accounts.db.bson_serializer.ObjectID.createFromHexString(id)
+	return accounts.db.bson_serializer.ObjectID.createFromHexString(id);
 }
 
 var findById = function(id, callback)
 {
 	accounts.findOne({_id: getObjectId(id)},
 		function(e, res) {
-		if (e) callback(e)
-		else callback(null, res)
+		if (e) callback(e);
+		else callback(null, res);
 	});
 };
 
@@ -196,7 +196,7 @@ var findByMultipleFields = function(a, callback)
 // this takes an array of name/val pairs to search against {fieldName : 'value'} //
 	accounts.find( { $or : a } ).toArray(
 		function(e, results) {
-		if (e) callback(e)
-		else callback(null, results)
+		if (e) callback(e);
+		else callback(null, results);
 	});
 }

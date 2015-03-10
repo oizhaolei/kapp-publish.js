@@ -2,7 +2,7 @@ div.row
   div.col-sm-1
     img(src="/icon512/icon_512_#{app._id}.png", width="50px", height="50px")
   div.col-sm-10
-    h2= app.appname
+    h2= app.name
   div.col-sm-1
     a(href="/app/toggledeploy?id=#{app._id}").btn.btn-danger.btn-lg(role='button')
       if app.deploy
@@ -12,9 +12,9 @@ div.row
 h2.sub-header App Detail
 form(action='/app/update?id=#{app._id}', method="post")#app-add-form.form-horizontal.well
   div.form-group
-    label(for='appname').control-label.col-sm-2 Name
+    label(for='name').control-label.col-sm-2 Name
     div.col-sm-10
-      input#inputAppName(type="text", placeholder="appname", name="appname", value="#{app.appname}").form-control.required
+      input#inputName(type="text", placeholder="name", name="name", value="#{app.name}").form-control.required
       span.help-block 可使用 30 个
   div.form-group
     label(for='summary').control-label.col-sm-2 Summary
@@ -119,7 +119,7 @@ if apks
         each apk, i in apks
           tr
             td=  apk.manifest.versionCode + "(" + apk.manifest.versionName + ")"
-            td=  apk.updatedate
+            td=  apk.lastupdated
             td=  apk.status
             td
               a(href="/apk?id=#{apk._id}") show details

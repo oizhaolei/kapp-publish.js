@@ -19,7 +19,7 @@ div.row
         tr
           td
             img(src="/icon512/icon_512_#{app._id}.png", width="50px", height="50px")
-            a(href="/app?id=#{app._id}")=  app.appname
+            a(href="/app?id=#{app._id}")=  app.name
           td
             if app.manifest
               = app.manifest.versionCode + "(" + app.manifest.versionName + ")"

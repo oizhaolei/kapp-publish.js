@@ -1,16 +1,11 @@
 var config = require('../../config.json');
 var path = require('path');
 
-var express = require('express');
 var formidable = require("formidable");
 var fs = require("fs");
 var apkReader = require('adbkit-apkreader');
 
-var modelContryList = require('./modules/country-list');
-var modelAccountManager = require('./modules/account-manager');
 var modelAppManager = require('./modules/app-manager');
-var modelEmailDispatcher = require('./modules/email-dispatcher');
-
 
 module.exports = function (app) {
   /* GET Applist page. */
@@ -46,10 +41,10 @@ module.exports = function (app) {
   /* POST to Add App Service */
   app.post('/app/add', function(req, res) {
     // Get our form values. These rely on the "name" attributes
-    var appname = req.body.appname;
+    var name = req.body.name;
 
     // Submit to the DB
-    modelAppManager.addApp(req.session.user.email, appname, function (err, doc) {
+    modelAppManager.addApp(req.session.user.email, name, function (err, doc) {
       if (err) {
         // If it failed, return error
         res.send("There was a problem adding the information to the database.");
@@ -108,7 +103,7 @@ module.exports = function (app) {
         fs.mkdirSync(destPath);
       } catch(e) {
       }
-      var destFile = destPath + '/' + manifest.versionCode + '.apk';
+      var destFile = path.join(destPath, manifest.versionCode + '.apk');
       fs.rename(files.file.path, destFile, function(err) {
         console.log(destFile);
       });
@@ -133,7 +128,7 @@ module.exports = function (app) {
     var form = new formidable.IncomingForm();
     form.parse(req, function(error, fields, files) {
 
-      var destFile = path.join(config.upload.icon512, '/icon_512_' + appid + '.png');
+      var destFile = path.join(config.upload.icon512, 'icon_512_' + appid + '.png');
       fs.rename(files.file.path, destFile, function(err) {
         console.log(destFile);
         res.redirect('/app?id=' + appid);
@@ -147,7 +142,7 @@ module.exports = function (app) {
     var form = new formidable.IncomingForm();
     form.parse(req, function(error, fields, files) {
 
-      var destFile = path.join(config.upload.icon1024_500, '/icon_1024_500_' + appid + '.png');
+      var destFile = path.join(config.upload.icon1024_500, 'icon_1024_500_' + appid + '.png');
       fs.rename(files.file.path, destFile, function(err) {
         console.log(destFile);
         res.redirect('/app?id=' + appid);
