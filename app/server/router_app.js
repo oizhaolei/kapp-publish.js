@@ -93,17 +93,14 @@ module.exports = function (app) {
 
   app.post('/upload/apk', function(req, res) {
 
-    var form = new formidable.IncomingForm();
+    var form = new formidable.IncomingForm({
+      uploadDir: config.tmpDirectory
+    });
     form.parse(req, function(error, fields, files) {
       var reader = apkReader.readFile(files.file.path);
       var manifest = reader.readManifestSync();
 
-      var destPath = path.join(config.upload.apk, manifest.package);
-      try {
-        fs.mkdirSync(destPath);
-      } catch(e) {
-      }
-      var destFile = path.join(destPath, manifest.versionCode + '.apk');
+      var destFile = path.join(config.upload.apk, manifest.package + '_' + manifest.versionCode + '.apk');
       fs.rename(files.file.path, destFile, function(err) {
         console.log(destFile);
       });
@@ -125,7 +122,9 @@ module.exports = function (app) {
   app.post('/upload/icon512', function(req, res) {
     var appid = req.query.id;
 
-    var form = new formidable.IncomingForm();
+    var form = new formidable.IncomingForm({
+      uploadDir: config.tmpDirectory
+    });
     form.parse(req, function(error, fields, files) {
 
       var destFile = path.join(config.upload.icon512, 'icon_512_' + appid + '.png');
@@ -139,7 +138,9 @@ module.exports = function (app) {
   app.post('/upload/icon1024_500', function(req, res) {
     var appid = req.query.id;
 
-    var form = new formidable.IncomingForm();
+    var form = new formidable.IncomingForm({
+      uploadDir: config.tmpDirectory
+    });
     form.parse(req, function(error, fields, files) {
 
       var destFile = path.join(config.upload.icon1024_500, 'icon_1024_500_' + appid + '.png');
